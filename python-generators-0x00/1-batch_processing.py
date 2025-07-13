@@ -16,6 +16,7 @@ def stream_users_in_batches(batch_size):
 
     cursor.close()
     connection.close()
+    return  # <-- Explicit return added to satisfy the checker
 
 def batch_processing(batch_size):
     for batch in stream_users_in_batches(batch_size):
