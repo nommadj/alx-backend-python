@@ -6,37 +6,37 @@ from parameterized import parameterized
 from client import GitHubOrgClient
 
 class TestGitHubOrgClient(unittest.TestCase):
-    """Unit tests for GitHubOrgClient"""
+    """Tests for GitHubOrgClient methods"""
 
     @classmethod
     def setUpClass(cls):
-        """Set up patcher for requests.get"""
+        """Start patcher for requests.get"""
         cls.get_patcher = patch("client.requests.get")
         cls.mock_get = cls.get_patcher.start()
 
     @classmethod
     def tearDownClass(cls):
-        """Tear down patcher"""
+        """Stop patcher for requests.get"""
         cls.get_patcher.stop()
 
     @parameterized.expand([
-        ("google", True),
-        ("abc", False),
+        ({"license": {"key": "mit"}}, "mit", True),
+        ({"license": {"key": "apache-2.0"}}, "mit", False),
+        ({}, "mit", False),
     ])
-    def test_has_license(self, org, expected):
-        """Test has_license method"""
-        client = GitHubOrgClient(org)
-        repo = {"license": {"key": "mit"}} if expected else {"license": {"key": "apache-2.0"}}
-        self.assertEqual(client.has_license(repo, "mit"), expected)
+    def test_has_license(self, repo, license_key, expected):
+        """Test has_license returns correct boolean"""
+        client = GitHubOrgClient("test_org")
+        result = client.has_license(repo, license_key)
+        self.assertEqual(result, expected)
 
     def test_public_repos(self):
-        """Test public_repos with mocked requests"""
-        test_payload = [{"name": "repo1"}, {"name": "repo2"}]
-        self.mock_get.return_value.json.return_value = test_payload
-        client = GitHubOrgClient("google")
-        repos = client.public_repos()
-        self.assertEqual(repos, ["repo1", "repo2"])
+        """Test public_repos returns repo names"""
+        payload = [{"name": "repo1"}, {"name": "repo2"}]
+        mock_response = MagicMock()
+        mock_response.json.return_value = payload
+        self.mock_get.return_value = mock_response
 
-if __name__ == "__main__":
-    unittest.main()
+        client = GitHubOrgClient("test_org")
+        self.assertEqual(client.public_repos(), ["repo1", "repo2"])
 
