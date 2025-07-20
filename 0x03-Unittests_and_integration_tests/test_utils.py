@@ -1,1 +1,42 @@
-#!/usr/bin/env python3\n"""unit tests for utils"""\nimport unittest\nfrom parameterized import parameterized\nfrom unittest.mock import patch, Mock\nfrom utils import access_nested_map, get_json, memoize\n\nclass TestAccessNestedMap(unittest.TestCase):\n    @parameterized.expand([\n        ({\"a\": 1}, (\"a\",), 1),\n        ({\"a\": {\"b\": 2}}, (\"a\",), {\"b\": 2}),\n        ({\"a\": {\"b\": 2}}, (\"a\", \"b\"), 2),\n    ])\n    def test_access_nested_map(self, nested_map, path, expected):\n        self.assertEqual(access_nested_map(nested_map, path), expected)\n\n    @parameterized.expand([\n        ({}, (\"a\",)),\n        ({\"a\": 1}, (\"a\", \"b\")),\n    ])\n    def test_access_nested_map_exception(self, nested_map, path):\n        with self.assertRaises(KeyError) as cm:\n            access_nested_map(nested_map, path)\n        self.assertEqual(str(cm.exception), repr(path[-1]))\n\nclass TestGetJson(unittest.TestCase):\n    @parameterized.expand([\n        (\"http://example.com\", {\"payload\": True}),\n        (\"http://holberton.io\", {\"payload\": False}),\n    ])\n    def test_get_json(self, test_url, test_payload):\n        mock_response = Mock()\n        mock_response.json.return_value = test_payload\n        with patch(\"utils.requests.get\", return_value=mock_response) as mock_get:\n            self.assertEqual(get_json(test_url), test_payload)\n            mock_get.assert_called_once_with(test_url)\n\nclass TestMemoize(unittest.TestCase):\n    def test_memoize(self):\n        class TestClass:\n            def a_method(self):\n                return 42\n            @memoize\n            def a_property(self):\n                return self.a_method()\n        with patch.object(TestClass, \"a_method\", return_value=42) as mock_method:\n            obj = TestClass()\n            self.assertEqual(obj.a_property, 42)\n            self.assertEqual(obj.a_property, 42)\n            mock_method.assert_called_once()
+"""Module for testing GitHubOrgClient utilities.""" 
+
+import unittest
+from unittest.mock import patch, MagicMock
+from parameterized import parameterized
+from client import GitHubOrgClient
+
+class TestGitHubOrgClient(unittest.TestCase):
+    """Unit tests for GitHubOrgClient"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up patcher for requests.get"""
+        cls.get_patcher = patch("client.requests.get")
+        cls.mock_get = cls.get_patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Tear down patcher"""
+        cls.get_patcher.stop()
+
+    @parameterized.expand([
+        ("google", True),
+        ("abc", False),
+    ])
+    def test_has_license(self, org, expected):
+        """Test has_license method"""
+        client = GitHubOrgClient(org)
+        repo = {"license": {"key": "mit"}} if expected else {"license": {"key": "apache-2.0"}}
+        self.assertEqual(client.has_license(repo, "mit"), expected)
+
+    def test_public_repos(self):
+        """Test public_repos with mocked requests"""
+        test_payload = [{"name": "repo1"}, {"name": "repo2"}]
+        self.mock_get.return_value.json.return_value = test_payload
+        client = GitHubOrgClient("google")
+        repos = client.public_repos()
+        self.assertEqual(repos, ["repo1", "repo2"])
+
+if __name__ == "__main__":
+    unittest.main()
+
