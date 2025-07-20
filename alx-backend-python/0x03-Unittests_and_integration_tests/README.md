@@ -1,0 +1,1 @@
+# Unittests and Integration Tests for Backend Python\n\nThis project contains unit and integration tests for utils and client service modules in Python.\n\n## Structure\n- Unit tests for utility functions and HTTP functions\n- Integration tests using fixtures\n- Mocking and patching using unittest.mock\n\n## Run tests:\n```bash\npython3 -m unittest discover\n```
