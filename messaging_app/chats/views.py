@@ -1,1 +1,14 @@
-from rest_framework import viewsets\nfrom .models import Conversation, Message\nfrom .serializers import ConversationSerializer, MessageSerializer\n\nclass ConversationViewSet(viewsets.ModelViewSet):\n    queryset = Conversation.objects.all()\n    serializer_class = ConversationSerializer\n\nclass MessageViewSet(viewsets.ModelViewSet):\n    queryset = Message.objects.all()\n    serializer_class = MessageSerializer
+
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import Conversation, Message
+from .serializers import ConversationSerializer, MessageSerializer
+
+class ConversationViewSet(viewsets.ModelViewSet):
+    queryset = Conversation.objects.all()
+    serializer_class = ConversationSerializer
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+

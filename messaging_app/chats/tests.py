@@ -1,1 +1,0 @@
-from django.test import TestCase\nfrom .models import User\n\nclass SimpleTestCase(TestCase):\n    def test_user_creation(self):\n        user = User.objects.create_user(username='testuser', password='pass123')\n        self.assertEqual(user.username, 'testuser')

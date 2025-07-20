@@ -1,1 +1,19 @@
-from rest_framework import serializers\nfrom .models import User, Conversation, Message\n\nclass UserSerializer(serializers.ModelSerializer):\n    class Meta:\n        model = User\n        fields = '__all__'\n\nclass MessageSerializer(serializers.ModelSerializer):\n    class Meta:\n        model = Message\n        fields = '__all__'\n\nclass ConversationSerializer(serializers.ModelSerializer):\n    messages = MessageSerializer(many=True, read_only=True)\n    class Meta:\n        model = Conversation\n        fields = ['conversation_id', 'participants', 'created_at', 'messages']
+
+from rest_framework import serializers
+from .models import Message, Conversation, CustomUser
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender = serializers.CharField(source='sender.username', read_only=True)
+
+    class Meta:
+        model = Message
+        fields = '__all__'
+
+class ConversationSerializer(serializers.ModelSerializer):
+    messages = MessageSerializer(many=True, read_only=True)
+    participants = serializers.SlugRelatedField(many=True, read_only=True, slug_field='username')
+
+    class Meta:
+        model = Conversation
+        fields = '__all__'
+
