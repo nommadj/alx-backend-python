@@ -1,0 +1,140 @@
+	
+info	
+name	"messaging_app API"
+schema	"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+_postman_id	"messaging_app_api_2025-07-26T16:39:06.789588"
+item	
+0	
+name	"Obtain JWT Token"
+request	
+method	"POST"
+header	
+0	
+key	"Content-Type"
+value	"application/json"
+body	
+mode	"raw"
+raw	'{\n  "username": "your_username",\n  "password": "your_password"\n}'
+url	
+raw	"http://localhost:8000/api/token/"
+protocol	"http"
+host	
+0	"localhost"
+port	"8000"
+path	
+0	"api"
+1	"token"
+2	""
+1	
+name	"Create Conversation"
+request	
+method	"POST"
+header	
+0	
+key	"Authorization"
+value	"Bearer {{jwt_token}}"
+1	
+key	"Content-Type"
+value	"application/json"
+body	
+mode	"raw"
+raw	'{\n  "participants": [\n    1,\n    2\n  ]\n}'
+url	
+raw	"http://localhost:8000/api/conversations/"
+protocol	"http"
+host	
+0	"localhost"
+port	"8000"
+path	
+0	"api"
+1	"conversations"
+2	""
+2	
+name	"Send Message"
+request	
+method	"POST"
+header	
+0	
+key	"Authorization"
+value	"Bearer {{jwt_token}}"
+1	
+key	"Content-Type"
+value	"application/json"
+body	
+mode	"raw"
+raw	'{\n  "conversation": 1,\n  "text": "Hey there!"\n}'
+url	
+raw	"http://localhost:8000/api/messages/"
+protocol	"http"
+host	
+0	"localhost"
+port	"8000"
+path	
+0	"api"
+1	"messages"
+2	""
+3	
+name	"Fetch Conversations"
+request	
+method	"GET"
+header	
+0	
+key	"Authorization"
+value	"Bearer {{jwt_token}}"
+url	
+raw	"http://localhost:8000/api/conversations/"
+protocol	"http"
+host	
+0	"localhost"
+port	"8000"
+path	
+0	"api"
+1	"conversations"
+2	""
+4	
+name	"Fetch Messages with Filters"
+request	
+method	"GET"
+header	
+0	
+key	"Authorization"
+value	"Bearer {{jwt_token}}"
+url	
+raw	"http://localhost:8000/api/messages/?page=1&start_time=2024-01-01&end_time=2024-12-31"
+protocol	"http"
+host	
+0	"localhost"
+port	"8000"
+path	
+0	"api"
+1	"messages"
+2	""
+query	
+0	
+key	"page"
+value	"1"
+1	
+key	"start_time"
+value	"2024-01-01"
+2	
+key	"end_time"
+value	"2024-12-31"
+5	
+name	"Unauthorized Access Test"
+request	
+method	"GET"
+header	[]
+url	
+raw	"http://localhost:8000/api/messages/"
+protocol	"http"
+host	
+0	"localhost"
+port	"8000"
+path	
+0	"api"
+1	"messages"
+2	""
+variable	
+0	
+key	"jwt_token"
+value	"replace_with_your_access_token"
